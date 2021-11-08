@@ -17,5 +17,11 @@ def get_customers():
     response = []
     for customer in customers:
         response.append({
-            
+            "name": customer.name,
+            "id" : customer.cutomer_id,
+            "phone": customer.phone_number,
+            "postal_code": customer.postal_code
         })
+
+    return jsonify(response), 200
+
