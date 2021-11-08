@@ -18,8 +18,8 @@ def get_customers():
     for customer in customers:
         response.append({
             "name": customer.name,
-            "id" : customer.cutomer_id,
-            "phone": customer.phone_number,
+            "id" : customer.customer_id,
+            "phone": customer.phone,
             "postal_code": customer.postal_code
         })
 
