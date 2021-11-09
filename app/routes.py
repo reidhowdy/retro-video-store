@@ -53,8 +53,13 @@ def create_customer():
 
 @customers_bp.route("/<customer_id>", methods=["GET"])
 def get_a_customer(customer_id):
+<<<<<<< HEAD
     # if type(customer_id) is not int:
     #     return jsonify(None), 400
+=======
+    if not type(customer_id) == int:
+       return jsonify(None), 400
+>>>>>>> 758613aa181fe4d52536d998bc659809954d51c4
     
     customer = Customer.query.get(customer_id)
     try:
