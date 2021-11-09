@@ -59,7 +59,7 @@ def get_a_customer(customer_id):
     customer = Customer.query.get(customer_id)
     try:
         return jsonify(customer.to_dict()), 200
-    #can we encorporate the guard clause into the except part of this try, except? if yes, how?
+    #can we incorporate the guard clause into the except part of this try, except? if yes, how?
     except AttributeError:
         return jsonify({"message": f"Customer {customer_id} was not found"}), 404
 
