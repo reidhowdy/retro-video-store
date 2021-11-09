@@ -4,6 +4,7 @@ from app.models.customer import Customer
 from app.models.video import Video
 from datetime import datetime
 from dotenv import load_dotenv
+from sqlalchemy import exc
 load_dotenv()
 
 customers_bp = Blueprint("customers", __name__, url_prefix="/customers")
@@ -53,15 +54,14 @@ def create_customer():
 
 @customers_bp.route("/<customer_id>", methods=["GET"])
 def get_a_customer(customer_id):
-
-    if type(customer_id) != int:
-        return jsonify(None), 400
-    else:
+    try:
         customer = Customer.query.get(customer_id)
         if not customer: 
             return jsonify({"message": f"Customer {customer_id} was not found"}), 404
         else:
             return jsonify(customer.to_dict()), 200
+    except exc.SQLAlchemyError:
+        return jsonify(None), 400
 
 
 
