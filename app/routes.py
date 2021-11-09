@@ -53,14 +53,26 @@ def create_customer():
 
 @customers_bp.route("/<customer_id>", methods=["GET"])
 def get_a_customer(customer_id):
-    if not type(customer_id) == int:
-       return jsonify(None), 400
+    if type(customer_id) != int:
+        return jsonify(None), 400
+    else:
+        customer = Customer.query.get(customer_id)
+        if not customer: 
+            return jsonify({"message": f"Customer {customer_id} was not found"}), 404
+        else:
+            return jsonify(customer.to_dict()), 200
+
+
     
-    customer = Customer.query.get(customer_id)
-    try:
-        return jsonify(customer.to_dict()), 200
-    #can we incorporate the guard clause into the except part of this try, except? if yes, how?
-    except AttributeError:
-        return jsonify({"message": f"Customer {customer_id} was not found"}), 404
 
+    # if type(customer_id) == int:
+        
+    # else:
+    #     return jsonify(None), 400
 
+   
+
+    
+    
+    
+        
