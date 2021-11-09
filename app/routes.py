@@ -88,7 +88,7 @@ def update_customer(customer_id):
 
         db.session.commit()
 
-        response = {"customer": customer.to_dict()}
+        response = customer.to_dict()
 
         return jsonify(response), 200
     
