@@ -1,8 +1,8 @@
-"""added columns to the customer and video models
+"""changes to custoemr and video model
 
-Revision ID: 69486f3649b5
+Revision ID: ce0b038ed7e2
 Revises: 
-Create Date: 2021-11-08 12:18:41.447443
+Create Date: 2021-11-09 12:04:33.188462
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '69486f3649b5'
+revision = 'ce0b038ed7e2'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -21,8 +21,8 @@ def upgrade():
     op.create_table('customer',
     sa.Column('customer_id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('name', sa.String(), nullable=True),
-    sa.Column('postal_code', sa.Integer(), nullable=True),
-    sa.Column('phone_number', sa.String(), nullable=True),
+    sa.Column('postal_code', sa.String(), nullable=True),
+    sa.Column('phone', sa.String(), nullable=True),
     sa.Column('register_at', sa.DateTime(), nullable=True),
     sa.PrimaryKeyConstraint('customer_id')
     )
