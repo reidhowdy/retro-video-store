@@ -1,5 +1,5 @@
 from app import db
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, json, jsonify, request
 from app.models.customer import Customer
 from app.models.video import Video
 from datetime import datetime
@@ -74,9 +74,22 @@ def get_a_customer(customer_id):
         
     # return jsonify(customer.to_dict()), 200
     
+@customers_bp.route("/<customer_id>", methods=["PUT"])
+def update_customer(customer_id):
+    pass
 
+@customers_bp.route("/<customer_id>", methods=["DELETE"])
+def delete_customer(customer_id):
+    customer = Customer.query.get(customer_id)
+    if customer is None:
+        return jsonify({"message": f"Customer {customer_id} was not found"}), 404
 
-    
-    
-    
-        
+    db.session.delete(customer)
+    db.session.commit()
+
+    response = {
+            "id" : customer.customer_id,
+            "message" : "Customer successfully deleted."
+        }
+
+    return jsonify(response), 200
