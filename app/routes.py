@@ -60,18 +60,21 @@ def get_a_customer(customer_id):
             return jsonify({"message": f"Customer {customer_id} was not found"}), 404
         else:
             return jsonify(customer.to_dict()), 200
+    #???? is there a way to pass test_get_invalid_customer_id besides this? 
     except exc.SQLAlchemyError:
         return jsonify(None), 400
 
-
-
-
-    # if type(customer_id) == int:
-        
-    # else:
+    #failing guard clause code ---->
+    # if type(customer_id) != int:
     #     return jsonify(None), 400
 
-   
+    # customer = Customer.query.get(customer_id)
+    # if customer is None: 
+    #     return jsonify({"message": f"Customer {customer_id} was not found"}), 404
+        
+    # return jsonify(customer.to_dict()), 200
+    
+
 
     
     
