@@ -53,6 +53,7 @@ def create_customer():
 
 @customers_bp.route("/<customer_id>", methods=["GET"])
 def get_a_customer(customer_id):
+
     if type(customer_id) != int:
         return jsonify(None), 400
     else:
@@ -63,7 +64,7 @@ def get_a_customer(customer_id):
             return jsonify(customer.to_dict()), 200
 
 
-    
+
 
     # if type(customer_id) == int:
         
