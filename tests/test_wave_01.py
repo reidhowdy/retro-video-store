@@ -66,9 +66,9 @@ def test_get_invalid_video_id(client, one_video):
     # Assert
     assert response.status_code == 400
 
-
-# CREATE
-def test_create_video(client):
+#did i delete something here? 
+# #i just named this
+def test_post_one_video_successfully(client):
     # Act
     response = client.post("/videos", json={
         "title": VIDEO_TITLE,
