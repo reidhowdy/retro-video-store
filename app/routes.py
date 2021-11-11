@@ -208,9 +208,9 @@ def patch_a_video(video_id):
     video = Video.query.get(video_id)
 
     if not video:
-        return jsonify({"message" : f"Video {video_id} was not found"}), 404
-    else:
+            return jsonify({"message" : f"Video {video_id} was not found"}), 404
 
+    try:
         video.title = request_body["title"]
         video.release_date = request_body["release_date"]
         video.total_inventory = request_body["total_inventory"]
@@ -218,5 +218,20 @@ def patch_a_video(video_id):
         db.session.commit()
 
         return jsonify(video.to_dict()), 200
+    except KeyError:
+        if "title" not in request_body.keys():
+            response = {
+                "details" : "Request body must include title."
+            }
+        elif "release_date" not in request_body.keys():
+            response = {
+                "details" : "Request body must include release_date."
+            }
+        elif "total_inventory" not in request_body.keys():
+            response = {
+                "details" : "Request body must include total_inventory."
+            }
+        
+        return jsonify(response), 400
 
 
