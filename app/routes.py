@@ -170,6 +170,10 @@ def create_video():
 
 @videos_bp.route("/<video_id>", methods=["GET"])
 def get_a_video(video_id):
+
+    if not video_id.isnumeric():
+        return jsonify(None), 400
+
     video = Video.query.get(video_id)
 
     if not video:
