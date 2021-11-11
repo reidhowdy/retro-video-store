@@ -55,7 +55,6 @@ def create_customer():
 @customers_bp.route("/<customer_id>", methods=["GET"])
 def get_a_customer(customer_id):
     
-    #
     if not customer_id.isnumeric():
         return jsonify(None), 400
     
@@ -170,10 +169,6 @@ def create_video():
 
 @videos_bp.route("/<video_id>", methods=["GET"])
 def get_a_video(video_id):
-
-    if not video_id.isnumeric():
-        return jsonify(None), 400
-
     video = Video.query.get(video_id)
 
     if not video:
@@ -208,9 +203,9 @@ def patch_a_video(video_id):
     video = Video.query.get(video_id)
 
     if not video:
-            return jsonify({"message" : f"Video {video_id} was not found"}), 404
+        return jsonify({"message" : f"Video {video_id} was not found"}), 404
+    else:
 
-    try:
         video.title = request_body["title"]
         video.release_date = request_body["release_date"]
         video.total_inventory = request_body["total_inventory"]
@@ -218,20 +213,5 @@ def patch_a_video(video_id):
         db.session.commit()
 
         return jsonify(video.to_dict()), 200
-    except KeyError:
-        if "title" not in request_body.keys():
-            response = {
-                "details" : "Request body must include title."
-            }
-        elif "release_date" not in request_body.keys():
-            response = {
-                "details" : "Request body must include release_date."
-            }
-        elif "total_inventory" not in request_body.keys():
-            response = {
-                "details" : "Request body must include total_inventory."
-            }
-        
-        return jsonify(response), 400
 
 

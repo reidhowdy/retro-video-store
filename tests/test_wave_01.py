@@ -18,7 +18,7 @@ CUSTOMER_PHONE = "123-123-1234"
 
 # READ
 def test_get_videos_no_saved_videos(client):
-    # Act
+    # Actg
     response = client.get("/videos")
     response_body = response.get_json()
 
