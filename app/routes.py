@@ -166,14 +166,3 @@ def patch_a_video(video_id):
         db.session.commit()
 
         return jsonify(video.to_dict()), 200
-
-    # if not video:
-    #     return jsonify({"message" : f"Video {video_id} was not found"}), 404
-    # else:
-    #     video.title = request_body["title"]
-    #     video.release_date = request_body["release_date"]
-    #     video.total_inventory = request_body["total_inventory"]
-
-    #     db.session.commit()
-
-    
