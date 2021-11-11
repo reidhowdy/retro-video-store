@@ -77,9 +77,6 @@ def get_a_customer(customer_id):
     #     return jsonify(None), 400
     #     #look into 400: bad request
 
-    
-
-    
 @customers_bp.route("/<customer_id>", methods=["PUT"])
 def update_customer(customer_id):
     customer = Customer.query.get(customer_id)
