@@ -1,3 +1,4 @@
+from io import StringIO
 from app import db
 from flask import Blueprint, jsonify, request
 from app.models.customer import Customer
@@ -54,19 +55,38 @@ def create_customer():
 
 @customers_bp.route("/<customer_id>", methods=["GET"])
 def get_a_customer(customer_id):
-    try:
-        customer = Customer.query.get(customer_id)
-        if not customer: 
-            return jsonify({"message": f"Customer {customer_id} was not found"}), 404
-        else:
-            return jsonify(customer.to_dict()), 200
-    except exc.SQLAlchemyError:
+    # when sqlalchemy gets the customer_id from '/customer/customer_id' it takes customer_id
+    # in as a string and has it's own way if discerning if that string is a sqlalchemy 'integer'
+    # type or not:
+        #SO when we make a guard clause to check if customer_id is an int, 
+        # we have to use a string method to determine that
+            # we can use .isnumeric() string method
+    if not customer_id.isnumeric():
         return jsonify(None), 400
+    
+    customer = Customer.query.get(customer_id)
+    if customer is None: 
+        return jsonify({"message": f"Customer {customer_id} was not found"}), 404
+        
+    return jsonify(customer.to_dict()), 200
+    
+    #original working solution
+    # try:
+    #     customer = Customer.query.get(customer_id)
+    #     if not customer: 
+    #         return jsonify({"message": f"Customer {customer_id} was not found"}), 404
+    #     else:
+    #         return jsonify(customer.to_dict()), 200
 
+    # except exc.SQLAlchemyError:
+    #     return jsonify(None), 400
+    #     #look into 400: bad request
 
-@videos_bp.route("", methods=["GET"])
-def get_video():
-    videos = Video.query.all()
+@customers_bp.route("/<customer_id>", methods=["PUT"])
+def update_customer(customer_id):
+    customer = Customer.query.get(customer_id)
+    if customer is None:
+        return jsonify({"message": f"Customer {customer_id} was not found"}), 404
 
     response = []
     for video in videos:
