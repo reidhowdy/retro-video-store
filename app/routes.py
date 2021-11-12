@@ -168,12 +168,17 @@ def create_video():
 
 @videos_bp.route("/<video_id>", methods=["GET"])
 def get_a_video(video_id):
+    if not video_id.isnumeric():
+        return jsonify(None), 400
+
     video = Video.query.get(video_id)
 
     if not video:
         return jsonify({"message" : f"Video {video_id} was not found"}), 404
 
     return jsonify(video.to_dict()), 200    
+
+
     
 @videos_bp.route("/<video_id>", methods=["DELETE"])
 def delete_a_video(video_id):
@@ -196,55 +201,63 @@ def delete_a_video(video_id):
 
 @videos_bp.route("/<video_id>", methods=["PUT"])
 def patch_a_video(video_id):
+    try:
 
-    request_body = request.get_json()
+        request_body = request.get_json()
 
-    video = Video.query.get(video_id)
+        video = Video.query.get(video_id)
 
-    if not video:
-        return jsonify({"message" : f"Video {video_id} was not found"}), 404
-    else:
+        if not video:
+            return jsonify({"message" : f"Video {video_id} was not found"}), 404
+        else:
 
-        video.title = request_body["title"]
-        video.release_date = request_body["release_date"]
-        video.total_inventory = request_body["total_inventory"]
+            video.title = request_body["title"]
+            video.release_date = request_body["release_date"]
+            video.total_inventory = request_body["total_inventory"]
 
-        db.session.commit()
+            db.session.commit()
 
-        return jsonify(video.to_dict()), 200
+            return jsonify(video.to_dict()), 200
+    except KeyError:
+        return jsonify(None), 400
 
 #wave 2
 @rentals_bp.route("/check-out", methods=["POST"])
 def check_out():
-    #
-    #create instance of Rental
-    request_body = request.get_json()
 
-    rental = Rental(video_id=request_body["video_id"], 
-    customer_id=request_body["customer_id"], 
-    due_date=date.today() + timedelta(days=7),
-    )
+    try:
+        request_body = request.get_json()
+        video = Video.query.get(request_body["video_id"])
+        customer = Customer.query.get(request_body["customer_id"])
+        if not video or not customer:
+            return jsonify(None), 404
 
-    db.session.add(rental)
-    db.session.commit()
+        
+        rentals_of_video = Rental.query.filter_by(video_id=request_body["video_id"])
+        videos_checked_out = 0
+        for rental in rentals_of_video:
+            videos_checked_out += 1
 
+        if video.total_inventory-videos_checked_out == 0:
+            return jsonify({"message" : "Could not perform checkout"}), 400
 
-    #customer = Customer.query.get(request_body["customer_id"])
+        rental = Rental(video_id=request_body["video_id"], 
+        customer_id=request_body["customer_id"], 
+        due_date=date.today() + timedelta(days=7),
+        )
 
-    #query rentals for a list of all rentals at a certain video_id
-    #then avail inventory is video.total_inventory-len(that list)
+        db.session.add(rental)
+        db.session.commit()
 
-    video = Video.query.get(request_body["video_id"])
-    rentals_of_video = Rental.query.filter_by(video_id=request_body["video_id"])
-    videos_checked_out = 0
-    for rental in rentals_of_video:
         videos_checked_out += 1
 
-    return jsonify({"customer_id": rental.customer_id,
-        "video_id": rental.video_id,
-        "due_date": rental.due_date,
-        "videos_checked_out_count": videos_checked_out,
-        "available_inventory": video.total_inventory-videos_checked_out}), 200
+        return jsonify({"customer_id": rental.customer_id,
+            "video_id": rental.video_id,
+            "due_date": rental.due_date,
+            "videos_checked_out_count": videos_checked_out,
+            "available_inventory": video.total_inventory-videos_checked_out}), 200
+    except KeyError:
+        return jsonify(None), 400
 
 
 
