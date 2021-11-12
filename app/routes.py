@@ -220,11 +220,7 @@ def check_out():
         if not video or not customer:
             return jsonify(None), 404
 
-        
-        rentals_of_video = Rental.query.filter_by(video_id=request_body["video_id"]).all()
-        videos_checked_out = 0
-        for rental in rentals_of_video:
-            videos_checked_out += 1
+        videos_checked_out = Rental.query.filter_by(video_id=request_body["video_id"]).count()
 
         if video.total_inventory-videos_checked_out == 0:
             return jsonify({"message" : "Could not perform checkout"}), 400
@@ -257,17 +253,13 @@ def check_in():
         if not video or not customer:
             return jsonify(None), 404
         
-        # if request_body["video_id"] not in customer.videos:
-        #     return jsonify({"message": f"No outstanding rentals for customer {request_body['customer_id']} and video {request_body['video_id']}"}), 400
+        if video not in customer.videos:
+            return jsonify({"message": f"No outstanding rentals for customer {request_body['customer_id']} and video {request_body['video_id']}"}), 400
 
-        rentals_of_video = Rental.query.filter_by(video_id=request_body["video_id"])
-        videos_checked_out = 0
-        for rental in rentals_of_video:
-            videos_checked_out += 1
-
-        rental = Rental.query.filter_by(customer_id=request_body['customer_id']).first()
-
-        db.session.delete(rental)
+        videos_checked_out = Rental.query.filter_by(video_id=request_body["video_id"]).count()
+    
+        rental = Rental.query.filter(Rental.customer_id==request_body['customer_id'], Rental.video_id==request_body['video_id'])
+        rental.return_date = date.today()
         db.session.commit()
 
         videos_checked_out -= 1
