@@ -1,5 +1,5 @@
 from app import db
-from flask import Blueprint, json, jsonify, request
+from flask import Blueprint, jsonify, request
 from app.models.customer import Customer
 from app.models.video import Video
 from app.models.rental import Rental
