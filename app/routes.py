@@ -277,3 +277,37 @@ def check_in():
 
 
 
+@customers_bp.route("/<customer_id>/rentals", methods=["GET"])
+def get_rentals_by_customer(customer_id):
+    customer = Customer.query.get(customer_id)
+
+    if not customer:
+        return jsonify({"message" : f"Customer {customer_id} was not found"}), 404
+
+    response_body = []
+
+    for video in customer.videos:
+        response_body.append(video.to_dict())
+
+    return jsonify(response_body), 200
+
+
+@videos_bp.route("/<video_id>/rentals", methods=["GET"])
+def get_rentals_by_video(video_id):
+    rentals = Rental.query.filter_by(video_id=video_id)
+    video = Video.query.get(video_id)
+
+    if not video:
+        return jsonify({"message" : f"Video {video_id} was not found"}), 404
+
+    customer_list = []
+    for rental in rentals:
+        customer = Customer.query.get(rental.customer_id)
+        customer_list.append(customer.to_dict())
+
+    return jsonify(customer_list), 200
+
+
+
+
+
