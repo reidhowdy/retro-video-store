@@ -7,4 +7,4 @@ class Rental(db.Model):
 
 
     due_date = db.Column(db.DateTime)
-    return_date = db.Column(db.DateTime)
+    return_date = db.Column(db.DateTime, nullable=True)

@@ -2,14 +2,15 @@ from app import db
 from flask import Blueprint, json, jsonify, request
 from app.models.customer import Customer
 from app.models.video import Video
-from datetime import datetime
+from app.models.rental import Rental
+from datetime import timedelta, date
 from dotenv import load_dotenv
 from sqlalchemy import exc
 load_dotenv()
 
 customers_bp = Blueprint("customers", __name__, url_prefix="/customers")
 videos_bp = Blueprint("videos", __name__, url_prefix="/videos")
-# rentals_bp = Blueprint("rentals", __name__, url_prefix="/rentals")
+rentals_bp = Blueprint("rentals", __name__, url_prefix="/rentals")
 
 @customers_bp.route("", methods=["GET"])
 def get_customers():
@@ -211,5 +212,40 @@ def patch_a_video(video_id):
         db.session.commit()
 
         return jsonify(video.to_dict()), 200
+
+#wave 2
+@rentals_bp.route("/check-out", methods=["POST"])
+def check_out():
+    #
+    #create instance of Rental
+    request_body = request.get_json()
+
+    rental = Rental(video_id=request_body["video_id"], 
+    customer_id=request_body["customer_id"], 
+    due_date=date.today() + timedelta(days=7),
+    )
+
+    db.session.add(rental)
+    db.session.commit()
+
+
+    #customer = Customer.query.get(request_body["customer_id"])
+
+    #query rentals for a list of all rentals at a certain video_id
+    #then avail inventory is video.total_inventory-len(that list)
+
+    video = Video.query.get(request_body["video_id"])
+    rentals_of_video = Rental.query.filter_by(video_id=request_body["video_id"])
+    videos_checked_out = 0
+    for rental in rentals_of_video:
+        videos_checked_out += 1
+
+    return jsonify({"customer_id": rental.customer_id,
+        "video_id": rental.video_id,
+        "due_date": rental.due_date,
+        "videos_checked_out_count": videos_checked_out,
+        "available_inventory": video.total_inventory-videos_checked_out}), 200
+
+
 
 
