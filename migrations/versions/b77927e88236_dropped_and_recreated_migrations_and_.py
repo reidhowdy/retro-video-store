@@ -1,8 +1,9 @@
-"""empty message
+"""dropped and recreated migrations and tables to overcome error
 
-Revision ID: 7dcdfb3cd648
+
+Revision ID: b77927e88236
 Revises: 
-Create Date: 2021-11-11 16:30:45.291884
+Create Date: 2021-11-12 15:40:42.676271
 
 """
 from alembic import op
@@ -10,7 +11,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '7dcdfb3cd648'
+revision = 'b77927e88236'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -36,6 +37,8 @@ def upgrade():
     op.create_table('rental',
     sa.Column('video_id', sa.Integer(), nullable=False),
     sa.Column('customer_id', sa.Integer(), nullable=False),
+    sa.Column('due_date', sa.DateTime(), nullable=True),
+    sa.Column('return_date', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['customer_id'], ['customer.customer_id'], ),
     sa.ForeignKeyConstraint(['video_id'], ['video.video_id'], ),
     sa.PrimaryKeyConstraint('video_id', 'customer_id')

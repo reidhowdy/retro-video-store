@@ -65,19 +65,7 @@ def get_a_customer(customer_id):
         return jsonify({"message": f"Customer {customer_id} was not found"}), 404
         
     return jsonify(customer.to_dict()), 200
-    
-    
-    #original working solution
-    # try:
-    #     customer = Customer.query.get(customer_id)
-    #     if not customer: 
-    #         return jsonify({"message": f"Customer {customer_id} was not found"}), 404
-    #     else:
-    #         return jsonify(customer.to_dict()), 200
 
-    # except exc.SQLAlchemyError:
-    #     return jsonify(None), 400
-    #     #look into 400: bad request
 
 @customers_bp.route("/<customer_id>", methods=["PUT"])
 def update_customer(customer_id):
@@ -233,7 +221,7 @@ def check_out():
             return jsonify(None), 404
 
         
-        rentals_of_video = Rental.query.filter_by(video_id=request_body["video_id"])
+        rentals_of_video = Rental.query.filter_by(video_id=request_body["video_id"]).all()
         videos_checked_out = 0
         for rental in rentals_of_video:
             videos_checked_out += 1
@@ -256,6 +244,41 @@ def check_out():
             "due_date": rental.due_date,
             "videos_checked_out_count": videos_checked_out,
             "available_inventory": video.total_inventory-videos_checked_out}), 200
+    except KeyError:
+        return jsonify(None), 400
+
+
+@rentals_bp.route("/check-in", methods=["POST"])
+def check_in():
+    try:
+        request_body = request.get_json()
+        video = Video.query.get(request_body["video_id"])
+        customer = Customer.query.get(request_body["customer_id"])
+        if not video or not customer:
+            return jsonify(None), 404
+        
+        # if request_body["video_id"] not in customer.videos:
+        #     return jsonify({"message": f"No outstanding rentals for customer {request_body['customer_id']} and video {request_body['video_id']}"}), 400
+
+        rentals_of_video = Rental.query.filter_by(video_id=request_body["video_id"])
+        videos_checked_out = 0
+        for rental in rentals_of_video:
+            videos_checked_out += 1
+
+        rental = Rental.query.filter_by(customer_id=request_body['customer_id']).first()
+
+        db.session.delete(rental)
+        db.session.commit()
+
+        videos_checked_out -= 1
+
+        return jsonify({
+            'video_id' : video.video_id,
+            'customer_id' : customer.customer_id,
+            "videos_checked_out_count": videos_checked_out,
+            "available_inventory": video.total_inventory-videos_checked_out
+        }), 200
+
     except KeyError:
         return jsonify(None), 400
 
