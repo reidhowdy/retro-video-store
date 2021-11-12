@@ -5,7 +5,6 @@ from app.models.video import Video
 from app.models.rental import Rental
 from datetime import timedelta, date
 from dotenv import load_dotenv
-from sqlalchemy import exc
 load_dotenv()
 
 rentals_bp = Blueprint("rentals", __name__, url_prefix="/rentals")

@@ -1,11 +1,7 @@
 from app import db
 from flask import Blueprint, json, jsonify, request
 from app.models.customer import Customer
-from app.models.video import Video
-from app.models.rental import Rental
-from datetime import timedelta, date
 from dotenv import load_dotenv
-from sqlalchemy import exc
 load_dotenv()
 
 customers_bp = Blueprint("customers", __name__, url_prefix="/customers")
