@@ -6,13 +6,11 @@ load_dotenv()
 
 customers_bp = Blueprint("customers", __name__, url_prefix="/customers")
 
+
 @customers_bp.route("", methods=["GET"])
 def get_customers():
     customers = Customer.query.all()
-
-    response = []
-    for customer in customers:
-        response.append(customer.to_dict())
+    response = [customer.to_dict() for customer in customers]
 
     return jsonify(response), 200
 
@@ -26,38 +24,38 @@ def create_customer():
         db.session.commit()
 
         response = {
-            "id" : new_customer.customer_id,
-            "message" : "Customer successfully created."
+            "id": new_customer.customer_id,
+            "message": "Customer successfully created."
         }
 
         return jsonify(response), 201
-    
+
     except KeyError:
         if "postal_code" not in request_body.keys():
             response = {
-                "details" : "Request body must include postal_code."
+                "details": "Request body must include postal_code."
             }
         elif "name" not in request_body.keys():
             response = {
-                "details" : "Request body must include name."
+                "details": "Request body must include name."
             }
         elif "phone" not in request_body.keys():
             response = {
-                "details" : "Request body must include phone."
+                "details": "Request body must include phone."
             }
-        
+
         return jsonify(response), 400
+
 
 @customers_bp.route("/<customer_id>", methods=["GET"])
 def get_a_customer(customer_id):
-    
     if not customer_id.isnumeric():
         return jsonify(None), 400
-    
+
     customer = Customer.query.get(customer_id)
-    if customer is None: 
+    if customer is None:
         return jsonify({"message": f"Customer {customer_id} was not found"}), 404
-        
+
     return jsonify(customer.to_dict()), 200
 
 
@@ -75,26 +73,25 @@ def update_customer(customer_id):
 
         db.session.commit()
 
-        response = customer.to_dict()
+        return jsonify(customer.to_dict()), 200
 
-        return jsonify(response), 200
-    
     except KeyError:
         if "postal_code" not in request_body.keys():
             response = {
-                "details" : "Request body must include postal_code."
+                "details": "Request body must include postal_code."
             }
         elif "name" not in request_body.keys():
             response = {
-                "details" : "Request body must include name."
+                "details": "Request body must include name."
             }
         elif "phone" not in request_body.keys():
             response = {
-                "details" : "Request body must include phone."
+                "details": "Request body must include phone."
             }
-        
+
         return jsonify(response), 400
-        
+
+
 @customers_bp.route("/<customer_id>", methods=["DELETE"])
 def delete_customer(customer_id):
     customer = Customer.query.get(customer_id)
@@ -105,22 +102,19 @@ def delete_customer(customer_id):
     db.session.commit()
 
     response = {
-            "id" : customer.customer_id,
-            "message" : "Customer successfully deleted."
-        }
+        "id": customer.customer_id,
+        "message": "Customer successfully deleted."
+    }
 
     return jsonify(response), 200
+
 
 @customers_bp.route("/<customer_id>/rentals", methods=["GET"])
 def get_rentals_by_customer(customer_id):
     customer = Customer.query.get(customer_id)
-
     if not customer:
-        return jsonify({"message" : f"Customer {customer_id} was not found"}), 404
+        return jsonify({"message": f"Customer {customer_id} was not found"}), 404
 
-    response_body = []
-
-    for video in customer.videos:
-        response_body.append(video.to_dict())
+    response_body = [video.to_dict() for video in customer.videos]
 
     return jsonify(response_body), 200
