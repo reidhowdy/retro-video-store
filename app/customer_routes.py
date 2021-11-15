@@ -30,6 +30,7 @@ def get_customers():
     response = [customer.to_dict() for customer in customers.items]
     #because no matter what 'customers' is paginated, either with the parameters passed in, or the default parameters
     #when we loop we can use pagination objects .items attribute to loop over the individual items themselves
+    #we use .items with no () because 'items' is an attribute of the pagination CLASS, not a method or a function 
 
     # if page:
     #     #can we paginate after querying?
