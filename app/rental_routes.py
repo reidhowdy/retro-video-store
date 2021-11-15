@@ -72,7 +72,6 @@ def check_in():
     except KeyError:
         return jsonify(None), 400
 
-
 @rentals_bp.route("/overdue", methods=["GET"])
 def get_overdue_customers():
     #rentals = Rental.query.all()

@@ -1,7 +1,8 @@
 from app import db
 from flask import Blueprint, jsonify, request
 from app.models.customer import Customer
-# from sqlalchemy_paginator import Paginator
+from app.models.rental import Rental
+from datetime import timedelta, date
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -33,7 +34,7 @@ def get_customers():
     
     if customer_query == "name":
         customers = Customer.query.order_by(Customer.name.asc()).paginate(page=page, per_page=num_per_page, error_out=False)
-        #when error out is false, page and per_page default to 1 and 20 respectively
+        #when error_out is false, page and per_page default to 1 and 20 respectively
         #so we can paginate, and if no p and n parameters are passed in that's no problem because the defaults are passed in
     else:
         customers = Customer.query.order_by(Customer.customer_id.asc()).paginate(page=page, per_page=num_per_page, error_out=False) 
@@ -127,3 +128,9 @@ def get_rentals_by_customer(customer_id):
     response_body = [video.to_dict() for video in customer.videos]
 
     return jsonify(response_body), 200
+
+
+
+
+
+
