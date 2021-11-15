@@ -1,7 +1,7 @@
 from app import db
 from flask import Blueprint, jsonify, request
 from app.models.customer import Customer
-from sqlalchemy_paginator import Paginator
+# from sqlalchemy_paginator import Paginator
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -11,26 +11,27 @@ customers_bp = Blueprint("customers", __name__, url_prefix="/customers")
 @customers_bp.route("", methods=["GET"])
 def get_customers():
     customer_query = request.args.get("sort")
-
-    
+    num_per_page = request.args.get('n', type=int)
+    page = request.args.get('p', type=int)  
 
     # if page:
     #     paginate(page=page, per_page=num_per_page, error_out=True, max_per_page=None)
     
     if customer_query == "name":
-        customers = Customer.query.order_by(Customer.name.asc())
+        customers = Customer.query.order_by(Customer.name.asc()).paginate(page=page, per_page=num_per_page, error_out=False)
     else:
-        customers = Customer.query.order_by(Customer.customer_id.asc())
+        customers = Customer.query.order_by(Customer.customer_id.asc()).paginate(page=page, per_page=num_per_page, error_out=False)
 
-    num_per_page = request.args.get('n', type=int)
-    page = request.args.get('p', 1, type=int)
-    if page:
-        #can we paginate after querying?
-        customers = customers.paginate(page=page, per_page=num_per_page)
-
-    
+    # num_per_page = request.args.get('n', type=int)
+    # page = request.args.get('p', type=int)    
     #customers = Customer.query.all()
-    response = [customer.to_dict() for customer in customers]
+    response = [customer.to_dict() for customer in customers.items]
+
+    # if page:
+    #     #can we paginate after querying?
+    #     customers = customers.paginate(page=page, per_page=num_per_page)
+    #     response = [customer.to_dict() for customer in customers.items()]
+
 
     return jsonify(response), 200
 
