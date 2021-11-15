@@ -7,6 +7,23 @@ load_dotenv()
 
 customers_bp = Blueprint("customers", __name__, url_prefix="/customers")
 
+#HELPER FUNCTION
+def find_specific_key_error(request_body):
+    if "postal_code" not in request_body.keys():
+            response = {
+                "details": "Request body must include postal_code."
+            }
+    elif "name" not in request_body.keys():
+        response = {
+            "details": "Request body must include name."
+        }
+    elif "phone" not in request_body.keys():
+        response = {
+            "details": "Request body must include phone."
+        }
+
+    return response
+
 
 @customers_bp.route("", methods=["GET"])
 def get_customers():
@@ -57,18 +74,7 @@ def create_customer():
         return jsonify(response), 201
 
     except KeyError:
-        if "postal_code" not in request_body.keys():
-            response = {
-                "details": "Request body must include postal_code."
-            }
-        elif "name" not in request_body.keys():
-            response = {
-                "details": "Request body must include name."
-            }
-        elif "phone" not in request_body.keys():
-            response = {
-                "details": "Request body must include phone."
-            }
+        response = find_specific_key_error(request_body)
 
         return jsonify(response), 400
 
@@ -102,18 +108,7 @@ def update_customer(customer_id):
         return jsonify(customer.to_dict()), 200
 
     except KeyError:
-        if "postal_code" not in request_body.keys():
-            response = {
-                "details": "Request body must include postal_code."
-            }
-        elif "name" not in request_body.keys():
-            response = {
-                "details": "Request body must include name."
-            }
-        elif "phone" not in request_body.keys():
-            response = {
-                "details": "Request body must include phone."
-            }
+        response = find_specific_key_error(request_body)
 
         return jsonify(response), 400
 
