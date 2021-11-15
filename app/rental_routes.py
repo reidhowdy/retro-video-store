@@ -72,6 +72,17 @@ def check_in():
     except KeyError:
         return jsonify(None), 400
 
+@rentals_bp.route("/<rental_id>", methods=["PUT"])
+def override_due_date(rental_id):
+    rental = Rental.query.get(rental_id)
+
+    rental.due_date = date.today() - timedelta(days=8)
+
+    db.session.commit()
+
+
+    return jsonify(f"successfully changed due date to {rental.due_date}"), 200
+
 @rentals_bp.route("/overdue", methods=["GET"])
 def get_overdue_customers():
     #rentals = Rental.query.all()
@@ -91,3 +102,5 @@ def get_overdue_customers():
                 "checkout_date": (rental.due_date - timedelta(days=7)),
                 "due_date": rental.due_date
             })
+
+    return jsonify(response), 200

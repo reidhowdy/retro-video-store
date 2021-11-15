@@ -10,6 +10,3 @@ class Rental(db.Model):
     return_date = db.Column(db.DateTime, nullable=True)
 
 
-    #play around with making a rental_id as primary key 
-    #play around w branching 
-

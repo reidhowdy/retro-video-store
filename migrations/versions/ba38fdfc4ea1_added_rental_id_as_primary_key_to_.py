@@ -1,9 +1,8 @@
-"""dropped and recreated migrations and tables to overcome error
+"""added rental_id as primary key to rental model
 
-
-Revision ID: b77927e88236
+Revision ID: ba38fdfc4ea1
 Revises: 
-Create Date: 2021-11-12 15:40:42.676271
+Create Date: 2021-11-15 17:40:03.435430
 
 """
 from alembic import op
@@ -11,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'b77927e88236'
+revision = 'ba38fdfc4ea1'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -35,13 +34,14 @@ def upgrade():
     sa.PrimaryKeyConstraint('video_id')
     )
     op.create_table('rental',
+    sa.Column('rental_id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('video_id', sa.Integer(), nullable=False),
     sa.Column('customer_id', sa.Integer(), nullable=False),
     sa.Column('due_date', sa.DateTime(), nullable=True),
     sa.Column('return_date', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['customer_id'], ['customer.customer_id'], ),
     sa.ForeignKeyConstraint(['video_id'], ['video.video_id'], ),
-    sa.PrimaryKeyConstraint('video_id', 'customer_id')
+    sa.PrimaryKeyConstraint('rental_id')
     )
     # ### end Alembic commands ###
 
