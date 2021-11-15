@@ -71,3 +71,24 @@ def check_in():
 
     except KeyError:
         return jsonify(None), 400
+
+
+@rentals_bp.route("/overdue", methods=["GET"])
+def get_overdue_customers():
+    #rentals = Rental.query.all()
+    overdue_rentals = Rental.query.filter(Rental.due_date<date.today())
+
+    response = []
+
+    for rental in overdue_rentals:
+        video = Video.query.get(rental.video_id)
+        customer = Customer.query.get(rental.customer_id)
+        response.append({
+                "video_id":rental.video_id,
+                "title":video.title,
+                "customer_id":customer.customer_id,
+                "name":customer.name,
+                "postal_code":customer.postal_code,
+                "checkout_date": (rental.due_date - timedelta(days=7)),
+                "due_date": rental.due_date
+            })
