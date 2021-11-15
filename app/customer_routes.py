@@ -19,13 +19,17 @@ def get_customers():
     
     if customer_query == "name":
         customers = Customer.query.order_by(Customer.name.asc()).paginate(page=page, per_page=num_per_page, error_out=False)
+        #when error out is false, page and per_page default to 1 and 20 respectively
+        #so we can paginate, and if no p and n parameters are passed in that's no problem because the defaults are passed in
     else:
         customers = Customer.query.order_by(Customer.customer_id.asc()).paginate(page=page, per_page=num_per_page, error_out=False)
 
     # num_per_page = request.args.get('n', type=int)
     # page = request.args.get('p', type=int)    
-    #customers = Customer.query.all()
+    
     response = [customer.to_dict() for customer in customers.items]
+    #because no matter what 'customers' is paginated, either with the parameters passed in, or the default parameters
+    #when we loop we can use pagination objects .items attribute to loop over the individual items themselves
 
     # if page:
     #     #can we paginate after querying?
