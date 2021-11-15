@@ -1,6 +1,7 @@
 from app import db
 from flask import Blueprint, jsonify, request
 from app.models.customer import Customer
+from sqlalchemy_paginator import Paginator
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -9,7 +10,26 @@ customers_bp = Blueprint("customers", __name__, url_prefix="/customers")
 
 @customers_bp.route("", methods=["GET"])
 def get_customers():
-    customers = Customer.query.all()
+    customer_query = request.args.get("sort")
+
+    
+
+    # if page:
+    #     paginate(page=page, per_page=num_per_page, error_out=True, max_per_page=None)
+    
+    if customer_query == "name":
+        customers = Customer.query.order_by(Customer.name.asc())
+    else:
+        customers = Customer.query.order_by(Customer.customer_id.asc())
+
+    num_per_page = request.args.get('n', type=int)
+    page = request.args.get('p', 1, type=int)
+    if page:
+        #can we paginate after querying?
+        customers = customers.paginate(page=page, per_page=num_per_page)
+
+    
+    #customers = Customer.query.all()
     response = [customer.to_dict() for customer in customers]
 
     return jsonify(response), 200
