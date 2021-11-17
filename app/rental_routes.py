@@ -92,3 +92,5 @@ def get_overdue_customers():
                 "checkout_date": (rental.due_date - timedelta(days=7)),
                 "due_date": rental.due_date
             })
+
+    return jsonify(response), 200
